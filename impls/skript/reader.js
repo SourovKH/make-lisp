@@ -24,7 +24,7 @@ const read_atom = (reader) => {
   const currentToken = reader.peek();
 
   if (currentToken.match(/[0-9]+/g))
-    return new MalValue(currentToken);
+    return new MalValue(parseInt(currentToken));
 
   if (currentToken.match(/[\Wa-zA-Z]/g))
     return new MalSymbol(currentToken);

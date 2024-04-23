@@ -1,44 +1,48 @@
 class MalVector {
-  #value
   constructor(args) {
-    this.#value = args;
+    this.value = args;
   }
 
   prStr() {
-    return `[${this.#value.map(x => x.prStr()).join(" ")}]`
+    return `[${this.value.map(x => x.prStr()).join(" ")}]`
+  }
+
+  isEmpty() {
+    return this.value.length === 0;
   }
 }
 
 class MalList {
-  #value
   constructor(args) {
-    this.#value = args;
+    this.value = args;
   }
 
   prStr() {
-    return `(${this.#value.map(x => x.prStr()).join(" ")})`
+    return `(${this.value.map(x => x.prStr()).join(" ")})`
+  }
+
+  isEmpty() {
+    return this.value.length === 0;
   }
 }
 
 class MalSymbol {
-  #value;
   constructor(args) {
-    this.#value = args;
+    this.value = args;
   }
 
   prStr() {
-    return this.#value.toString();
+    return this.value.toString();
   }
 }
 
 class MalValue {
-  #value
   constructor(args) {
-    this.#value = args;
+    this.value = args;
   }
 
   prStr() {
-    return this.#value;
+    return this.value + '';
   }
 }
 
