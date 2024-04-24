@@ -64,10 +64,10 @@ const EVAL = (ast, replEnv) => {
 const PRINT = ast => pr_str(ast);
 
 const addNumericMethods = (replEnv) => {
-  replEnv.set("+", (a, b) => new MalValue(a + b));
-  replEnv.set("-", (a, b) => new MalValue(a - b));
-  replEnv.set("*", (a, b) => new MalValue(a * b));
-  replEnv.set("/", (a, b) => new MalValue(a / b));
+  replEnv.set("+", (...args) => new MalValue(args.reduce((a, b) => a + b)));
+  replEnv.set("-", (...args) => new MalValue(args.reduce((a, b) => a - b)));
+  replEnv.set("*", (...args) => new MalValue(args.reduce((a, b) => a * b)));
+  replEnv.set("/", (...args) => new MalValue(args.reduce((a, b) => a / b)));
 }
 
 const rep = (str, repl_env) => PRINT(EVAL(READ(str), repl_env));
