@@ -52,7 +52,7 @@ class MalString {
   }
 
   prStr() {
-    return this.value.map(a => a.prStr()).join("");
+    return this.value;
   }
 }
 

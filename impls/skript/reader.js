@@ -22,9 +22,11 @@ class Reader {
 
 const read_atom = (reader) => {
   const currentToken = reader.peek();
-
   if (currentToken.match(/[0-9]+/g))
     return new MalValue(parseInt(currentToken));
+
+  if (/^".*"$/.test(currentToken))
+    return new MalString(currentToken);
 
   if (currentToken.match(/[\Wa-zA-Z]+/g))
     return new MalSymbol(currentToken);
@@ -62,19 +64,6 @@ const read_vector = (reader) => {
   }
 }
 
-const read_string = (reader, symbol) => {
-  const ast = [];
-
-  while (reader.next()) {
-    const token = reader.peek();
-    if (!token) throw new Error("unbalanced");
-
-    if (token === symbol) return new MalString([...ast]);
-
-    ast.push(read_form(reader));
-  }
-}
-
 const read_form = (reader) => {
   const token = reader.peek();
 
@@ -84,12 +73,6 @@ const read_form = (reader) => {
 
     case '[':
       return read_vector(reader);
-
-    case "\"":
-      return read_string(reader, "\"");
-
-    case "\'":
-      return read_string(reader, "\'");
 
     default: return read_atom(reader);
   }

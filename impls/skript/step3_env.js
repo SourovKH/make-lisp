@@ -41,7 +41,7 @@ const handleLet = (ast, replEnv) => {
   if (!exp) return new MalNil();
   const newEnv = new Env(replEnv);
   setBindings(bindings.value, newEnv);
-  
+
   return EVAL(exp, newEnv);
 }
 
