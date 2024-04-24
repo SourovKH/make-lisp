@@ -46,4 +46,20 @@ class MalValue {
   }
 }
 
-module.exports = { MalSymbol, MalValue, MalList, MalVector }
+class MalString {
+  constructor(value) {
+    this.value = value;
+  }
+
+  prStr() {
+    return this.value.map(a => a.prStr()).join("");
+  }
+}
+
+class MalNil {
+  prStr() {
+    return 'Nil';
+  }
+}
+
+module.exports = { MalSymbol, MalValue, MalList, MalVector, MalNil, MalString }

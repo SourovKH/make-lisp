@@ -1,4 +1,4 @@
-const { MalValue, MalSymbol, MalList, MalVector } = require("./types");
+const { MalValue, MalSymbol, MalList, MalVector, MalNil, MalString } = require("./types");
 
 class Reader {
   #position
@@ -62,6 +62,19 @@ const read_vector = (reader) => {
   }
 }
 
+const read_string = (reader, symbol) => {
+  const ast = [];
+
+  while (reader.next()) {
+    const token = reader.peek();
+    if (!token) throw new Error("unbalanced");
+
+    if (token === symbol) return new MalString([...ast]);
+
+    ast.push(read_form(reader));
+  }
+}
+
 const read_form = (reader) => {
   const token = reader.peek();
 
@@ -70,9 +83,15 @@ const read_form = (reader) => {
       return read_list(reader);
 
     case '[':
-      return read_vector(reader)
+      return read_vector(reader);
 
-    default: return read_atom(reader)
+    case "\"":
+      return read_string(reader, "\"");
+
+    case "\'":
+      return read_string(reader, "\'");
+
+    default: return read_atom(reader);
   }
 }
 

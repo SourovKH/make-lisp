@@ -2,7 +2,7 @@ const readline = require('node:readline');
 const { stdin: input, stdout: output } = require('node:process');
 const { read_str } = require('./reader');
 const { pr_str } = require('./printer');
-const { MalValue, MalList, MalSymbol, MalVector } = require('./types');
+const { MalValue, MalList, MalSymbol, MalVector, MalNil } = require('./types');
 const { Env } = require('./Env');
 
 const rl = readline.createInterface({ input, output });
@@ -22,7 +22,7 @@ const eval_ast = (ast, replEnv) => {
 }
 
 const setBindings = (bindings, replEnv) => {
-  for(let index = 0; index < bindings.length; index += 2) {
+  for (let index = 0; index < bindings.length; index += 2) {
     const key = bindings[index].value;
     const value = EVAL(bindings[index + 1], replEnv);
     replEnv.set(key, value);
@@ -38,9 +38,11 @@ const handleDef = (ast, replEnv) => {
 
 const handleLet = (ast, replEnv) => {
   [_, bindings, exp] = ast.value;
-    const newEnv = new Env(replEnv);
-    setBindings(bindings.value, newEnv);
-    return EVAL(exp, newEnv);
+  if (!exp) return new MalNil();
+  const newEnv = new Env(replEnv);
+  setBindings(bindings.value, newEnv);
+  
+  return EVAL(exp, newEnv);
 }
 
 const READ = str => read_str(str);
@@ -55,7 +57,7 @@ const EVAL = (ast, replEnv) => {
   const [symbol] = ast.value;
   if (symbol.value === 'def!') return handleDef(ast, replEnv);
 
-  if(symbol.value === 'let*') return handleLet(ast, replEnv);
+  if (symbol.value === 'let*') return handleLet(ast, replEnv);
 
   const [fn, ...args] = eval_ast(ast, replEnv).value;
   return fn.apply(null, args.map(x => x.value));
