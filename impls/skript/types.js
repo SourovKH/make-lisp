@@ -46,6 +46,16 @@ class MalValue {
   }
 }
 
+class MalBoolean {
+  constructor(value) {
+    this.value = value;
+  }
+
+  prStr() {
+    return this.value + '';
+  }
+}
+
 class MalString {
   constructor(value) {
     this.value = value;
@@ -62,4 +72,4 @@ class MalNil {
   }
 }
 
-module.exports = { MalSymbol, MalValue, MalList, MalVector, MalNil, MalString }
+module.exports = { MalSymbol, MalValue, MalList, MalVector, MalNil, MalString, MalBoolean }

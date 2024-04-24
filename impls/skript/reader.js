@@ -1,4 +1,4 @@
-const { MalValue, MalSymbol, MalList, MalVector, MalNil, MalString } = require("./types");
+const { MalValue, MalSymbol, MalList, MalVector, MalNil, MalString, MalBoolean } = require("./types");
 
 class Reader {
   #position
@@ -25,15 +25,14 @@ const read_atom = (reader) => {
   if (currentToken.match(/[0-9]+/g))
     return new MalValue(parseInt(currentToken));
 
+  if (currentToken === 'true' || currentToken === 'false')
+    return new MalBoolean(currentToken === 'true');
+
   if (/^".*"$/.test(currentToken))
     return new MalString(currentToken);
 
   if (currentToken.match(/[\Wa-zA-Z]+/g))
     return new MalSymbol(currentToken);
-
-  if (currentToken === 'true' || currentToken === 'false') {
-    return MalValue(currentToken === 'true');
-  }
 
   return new MalValue(currentToken);
 }
