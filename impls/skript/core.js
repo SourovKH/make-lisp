@@ -1,26 +1,19 @@
-const {MalValue, MalBoolean} = require("./types");
-const ld = require('lodash');
-
-const add = (...args) => new MalValue(args.reduce((a, b) => a + b));
-const subtract = (...args) => new MalValue(args.reduce((a, b) => a - b));
-const multiply = (...args) => new MalValue(args.reduce((a, b) => a * b));
-const divide = (...args) => new MalValue(args.reduce((a, b) => a / b));
-const lessThan = (a, b) => new MalBoolean(a < b);
-const greaterThan = (a, b) => new MalBoolean(a > b);
-const greaterThanEq = (a, b) => new MalBoolean(a >= b);
-const lessThanEq = (a, b) => new MalBoolean(a <= b);
-const equals = (a, b) => new MalBoolean(ld.isEqual(a, b));
+const {MalValue, MalBoolean, MalList} = require("./types");
 
 const ns = {
-  "+": add,
-  "-": subtract,
-  "*": multiply,
-  "/": divide,
-  "<": lessThan,
-  ">": greaterThan,
-  ">=": greaterThanEq,
-  "<=": lessThanEq,
-  "=": equals
+  "+": (...args) => args.reduce((a, b) => new MalValue(a.value + b.value)),
+  "-": (...args) => args.reduce((a, b) => new MalValue(a.value - b.value)),
+  "*": (...args) => args.reduce((a, b) => new MalValue(a.value * b.value)),
+  "/": (...args) => args.reduce((a, b) => new MalValue(a.value / b.value)),
+  "<": (a, b) => new MalBoolean(a.value < b.value),
+  ">": (a, b) => new MalBoolean(a.value > b.value),
+  ">=": (a, b) => new MalBoolean(a.value >= b),
+  "<=": (a, b) => new MalBoolean(a.value <= b),
+  "=": (a, b) => new MalBoolean(a.equals(b)),
+  "list": (...list) => new MalList(list),
+  "list?": (args) => new MalBoolean(args instanceof MalList),
+  "empty?": (list) => new MalBoolean(list.value.length === 0),
+  "count": (list) => new MalValue(list.value.length)
 }
 
 module.exports = { ns };

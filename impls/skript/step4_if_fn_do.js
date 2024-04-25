@@ -2,7 +2,7 @@ const readline = require('node:readline');
 const { stdin: input, stdout: output } = require('node:process');
 const { read_str } = require('./reader');
 const { pr_str } = require('./printer');
-const { MalValue, MalList, MalSymbol, MalVector, MalNil, MalBoolean, MalFunction } = require('./types');
+const { MalList, MalSymbol, MalVector, MalNil, MalFunction } = require('./types');
 const { Env } = require('./Env');
 const { ns } = require('./core');
 
@@ -48,15 +48,20 @@ const handleLet = (ast, replEnv) => {
   if (!exp) return new MalNil();
   const newEnv = new Env(replEnv);
   setBindings(bindings.value, newEnv);
-  
+
   return EVAL(exp, newEnv);
 }
 
 const handleIf = (ast, replEnv) => {
   const [_, condition, ifExpression, elseExpression] = ast.value;
-    const evaluatedCond = EVAL(condition, replEnv);
-    if (evaluatedCond.value) return eval_ast(ifExpression, replEnv)
-    return elseExpression ? eval_ast(elseExpression) : new MalNil;
+  const evaluatedCond = EVAL(condition, replEnv);
+  if (evaluatedCond.value) return eval_ast(ifExpression, replEnv)
+  return elseExpression ? eval_ast(elseExpression) : new MalNil;
+}
+
+const handleDo = (ast, replEnv) => {
+  const [_, ...expressions] = ast.value;
+  return eval_ast(new MalList(expressions), replEnv).value.at(-1);
 }
 
 const READ = str => read_str(str);
@@ -69,28 +74,27 @@ const EVAL = (ast, replEnv) => {
   }
 
   const [symbol] = ast.value;
-  if (symbol.value === 'def!') return handleDef(ast, replEnv);
-
-  if (symbol.value === 'let*') return handleLet(ast, replEnv);
-
-  if (symbol.value === 'do') {
-    const [_, ...expressions] = ast.value;
-    return eval_ast(new MalList(expressions), replEnv).value.at(-1);
-  }
-
-  if (symbol.value === 'if') return handleIf(ast, replEnv);
-
-  if (symbol.value === "fn*") {
-    const [_, bindings, body] = ast.value;
-    return new MalFunction(bindings, body);
+  switch (true) {
+    case (symbol.value === 'def!'):
+      return handleDef(ast, replEnv);
+    case (symbol.value === 'let*'):
+      return handleLet(ast, replEnv);
+    case (symbol.value === 'do'):
+      return handleDo(ast, replEnv);
+    case (symbol.value === 'if'):
+      return handleIf(ast, replEnv);
+    case (symbol.value === "fn*"):
+      const [_, bindings, body] = ast.value;
+      return new MalFunction(bindings, body);
   }
 
   const [fn, ...args] = eval_ast(ast, replEnv).value;
-  if(fn instanceof MalFunction) {
+  
+  if (fn instanceof MalFunction) {
     const newEnv = Env.functionalEnv(replEnv, fn.binding.value, args);
     return EVAL(fn.expression, newEnv);
   }
-  return fn.apply(null, args.map(x => x.value));
+  return fn.apply(null, args);
 };
 
 const PRINT = ast => pr_str(ast);

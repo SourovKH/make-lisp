@@ -10,6 +10,13 @@ class MalVector {
   isEmpty() {
     return this.value.length === 0;
   }
+
+  equals(other) {
+    return (
+      this.value.length === other.value.length &&
+      this.value.every((e, i) => e.equals(other.value[i]))
+    );
+  }
 }
 
 class MalList {
@@ -23,6 +30,13 @@ class MalList {
 
   isEmpty() {
     return this.value.length === 0;
+  }
+
+  equals(other) {
+    return (
+      this.value.length === other.value.length &&
+      this.value.every((e, i) => e.equals(other.value[i]))
+    );
   }
 }
 
@@ -44,6 +58,10 @@ class MalValue {
   prStr() {
     return this.value + '';
   }
+
+  equals(other) {
+    return this.value === other.value;
+  }
 }
 
 class MalBoolean {
@@ -63,6 +81,10 @@ class MalString {
 
   prStr() {
     return this.value;
+  }
+
+  equals(other) {
+    return this.value === other.value;
   }
 }
 
