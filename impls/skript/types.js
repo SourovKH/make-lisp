@@ -72,4 +72,15 @@ class MalNil {
   }
 }
 
-module.exports = { MalSymbol, MalValue, MalList, MalVector, MalNil, MalString, MalBoolean }
+class MalFunction {
+  constructor(binding, expression) {
+    this.binding = binding;
+    this.expression = expression;
+  }
+
+  prStr() {
+    return '#<function>'
+  }
+}
+
+module.exports = { MalSymbol, MalValue, MalList, MalVector, MalNil, MalString, MalBoolean, MalFunction }

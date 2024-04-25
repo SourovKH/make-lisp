@@ -7,6 +7,15 @@ class Env {
     this.data = {};
   }
 
+  static functionalEnv (outer, bindings, expressions) {
+    const newEnv = new this(outer);
+    bindings.forEach((element, index) => {
+      newEnv.set(element.value, expressions[index])
+    });
+
+    return newEnv;
+  }
+
   set(key, value) {
     this.data[key] = value;
   }

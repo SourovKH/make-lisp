@@ -2,10 +2,17 @@ const readline = require('node:readline');
 const { stdin: input, stdout: output } = require('node:process');
 const { read_str } = require('./reader');
 const { pr_str } = require('./printer');
-const { MalValue, MalList, MalSymbol, MalVector, MalNil, MalBoolean } = require('./types');
+const { MalValue, MalList, MalSymbol, MalVector, MalNil, MalBoolean, MalFunction } = require('./types');
 const { Env } = require('./Env');
+const { ns } = require('./core');
 
 const rl = readline.createInterface({ input, output });
+
+const loadCore = (replEnv) => {
+  Object.entries(ns).forEach(([func, body]) => {
+    replEnv.set(func, body);
+  })
+}
 
 const eval_ast = (ast, replEnv) => {
   switch (true) {
@@ -73,28 +80,24 @@ const EVAL = (ast, replEnv) => {
 
   if (symbol.value === 'if') return handleIf(ast, replEnv);
 
+  if (symbol.value === "fn*") {
+    const [_, bindings, body] = ast.value;
+    return new MalFunction(bindings, body);
+  }
+
   const [fn, ...args] = eval_ast(ast, replEnv).value;
+  if(fn instanceof MalFunction) {
+    const newEnv = Env.functionalEnv(replEnv, fn.binding.value, args);
+    return EVAL(fn.expression, newEnv);
+  }
   return fn.apply(null, args.map(x => x.value));
 };
 
 const PRINT = ast => pr_str(ast);
-
-const addNumericMethods = (replEnv) => {
-  replEnv.set("+", (...args) => new MalValue(args.reduce((a, b) => a + b)));
-  replEnv.set("-", (...args) => new MalValue(args.reduce((a, b) => a - b)));
-  replEnv.set("*", (...args) => new MalValue(args.reduce((a, b) => a * b)));
-  replEnv.set("/", (...args) => new MalValue(args.reduce((a, b) => a / b)));
-  replEnv.set("<", (a, b) => new MalBoolean(a < b));
-  replEnv.set(">", (a, b) => new MalBoolean(a > b));
-  replEnv.set(">=", (a, b) => new MalBoolean(a >= b));
-  replEnv.set("<=", (a, b) => new MalBoolean(a <= b));
-  replEnv.set("=", (a, b) => new MalBoolean(a === b));
-}
-
 const rep = (str, repl_env) => PRINT(EVAL(READ(str), repl_env));
 
 const repl_env = new Env();
-addNumericMethods(repl_env);
+loadCore(repl_env);
 
 const repl = () => {
   rl.question('user> ', (answer) => {
