@@ -4,7 +4,7 @@ class MalVector {
   }
 
   prStr() {
-    return `[${this.value.map(x => x.prStr()).join(" ")}]`
+    return `[${this.value.map((x) => x.prStr()).join(" ")}]`;
   }
 
   isEmpty() {
@@ -14,7 +14,6 @@ class MalVector {
   length() {
     return this.value.length;
   }
-
 
   equals(other) {
     return (
@@ -30,7 +29,7 @@ class MalList {
   }
 
   prStr() {
-    return `(${this.value.map(x => x.prStr()).join(" ")})`
+    return `(${this.value.map((x) => x.prStr()).join(" ")})`;
   }
 
   isEmpty() {
@@ -65,7 +64,7 @@ class MalValue {
   }
 
   prStr() {
-    return this.value + '';
+    return this.value + "";
   }
 
   equals(other) {
@@ -79,7 +78,7 @@ class MalBoolean {
   }
 
   prStr() {
-    return this.value + '';
+    return this.value + "";
   }
 
   equals(other) {
@@ -103,7 +102,7 @@ class MalString {
 
 class MalNil {
   prStr() {
-    return 'nil';
+    return "nil";
   }
 
   length() {
@@ -112,18 +111,42 @@ class MalNil {
 
   equals(other) {
     if (other instanceof MalNil) return true;
-    return false
+    return false;
   }
 }
 
 class MalFunction {
   constructor(func) {
-    this.value = func
+    this.value = func;
   }
 
   prStr() {
-    return '#<function>'
+    return "#<function>";
   }
 }
 
-module.exports = { MalSymbol, MalValue, MalList, MalVector, MalNil, MalString, MalBoolean, MalFunction }
+class MalKeyword {
+  constructor(value) {
+    this.value = value;
+  }
+
+  prStr() {
+    return `:${this.value}`;
+  }
+
+  equals(other) {
+    return this.value === other.value;
+  }
+}
+
+module.exports = {
+  MalSymbol,
+  MalValue,
+  MalList,
+  MalVector,
+  MalNil,
+  MalString,
+  MalBoolean,
+  MalFunction,
+  MalKeyword,
+};
