@@ -11,6 +11,11 @@ class MalVector {
     return this.value.length === 0;
   }
 
+  length() {
+    return this.value.length;
+  }
+
+
   equals(other) {
     return (
       this.value.length === other.value.length &&
@@ -30,6 +35,10 @@ class MalList {
 
   isEmpty() {
     return this.value.length === 0;
+  }
+
+  length() {
+    return this.value.length;
   }
 
   equals(other) {
@@ -72,6 +81,10 @@ class MalBoolean {
   prStr() {
     return this.value + '';
   }
+
+  equals(other) {
+    return this.value === other.value;
+  }
 }
 
 class MalString {
@@ -90,14 +103,22 @@ class MalString {
 
 class MalNil {
   prStr() {
-    return 'Nil';
+    return 'nil';
+  }
+
+  length() {
+    return 0;
+  }
+
+  equals(other) {
+    if (other instanceof MalNil) return true;
+    return false
   }
 }
 
 class MalFunction {
-  constructor(binding, expression) {
-    this.binding = binding;
-    this.expression = expression;
+  constructor(func) {
+    this.value = func
   }
 
   prStr() {

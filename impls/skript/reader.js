@@ -25,6 +25,8 @@ const read_atom = (reader) => {
   if (currentToken.match(/[0-9]+/g))
     return new MalValue(parseInt(currentToken));
 
+  if (currentToken === 'nil') return new MalNil();
+
   if (currentToken === 'true' || currentToken === 'false')
     return new MalBoolean(currentToken === 'true');
 

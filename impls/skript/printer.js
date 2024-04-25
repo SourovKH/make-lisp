@@ -1,4 +1,4 @@
-const pr_str = (ds) => {
+const pr_str = (ds, print_readably = false) => {
   console.log(ds.prStr());
 }
 

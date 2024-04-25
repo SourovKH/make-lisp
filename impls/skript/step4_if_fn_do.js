@@ -55,13 +55,24 @@ const handleLet = (ast, replEnv) => {
 const handleIf = (ast, replEnv) => {
   const [_, condition, ifExpression, elseExpression] = ast.value;
   const evaluatedCond = EVAL(condition, replEnv);
-  if (evaluatedCond.value) return eval_ast(ifExpression, replEnv)
-  return elseExpression ? eval_ast(elseExpression) : new MalNil;
+  if (evaluatedCond.value) return EVAL(ifExpression, replEnv)
+  return elseExpression ? EVAL(elseExpression, replEnv) : new MalNil;
 }
 
 const handleDo = (ast, replEnv) => {
   const [_, ...expressions] = ast.value;
   return eval_ast(new MalList(expressions), replEnv).value.at(-1);
+}
+
+const handleFunction = (ast, replEnv) => {
+  const [_, bindings, body] = ast.value;
+
+  const newFunction = (args) => {
+    const newEnv = Env.functionalEnv(replEnv, bindings.value, args);
+    return EVAL(body, newEnv);
+  }
+
+  return new MalFunction(newFunction);
 }
 
 const READ = str => read_str(str);
@@ -84,15 +95,14 @@ const EVAL = (ast, replEnv) => {
     case (symbol.value === 'if'):
       return handleIf(ast, replEnv);
     case (symbol.value === "fn*"):
-      const [_, bindings, body] = ast.value;
-      return new MalFunction(bindings, body);
+      return handleFunction(ast, replEnv);
   }
 
   const [fn, ...args] = eval_ast(ast, replEnv).value;
-  
+
   if (fn instanceof MalFunction) {
-    const newEnv = Env.functionalEnv(replEnv, fn.binding.value, args);
-    return EVAL(fn.expression, newEnv);
+    const func = fn.value;
+    return func(args);
   }
   return fn.apply(null, args);
 };
@@ -114,5 +124,5 @@ const repl = () => {
     repl();
   });
 }
-
+rep('(def! not (fn* (a) (if a false true)))', repl_env);
 repl();

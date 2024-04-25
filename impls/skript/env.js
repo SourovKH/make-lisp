@@ -1,3 +1,5 @@
+const { MalList } = require("./types");
+
 class Env {
   outer;
   data;
@@ -7,11 +9,19 @@ class Env {
     this.data = {};
   }
 
-  static functionalEnv (outer, bindings, expressions) {
+  static functionalEnv(outer, bindings, expressions) {
     const newEnv = new this(outer);
-    bindings.forEach((element, index) => {
-      newEnv.set(element.value, expressions[index])
-    });
+    for(let index in bindings) {
+      const bindIndex = +index;
+      const binding = bindings[bindIndex];
+      const exp = expressions[bindIndex];
+
+      if(binding.value === '&') {
+        newEnv.set(bindings[bindIndex + 1].value, new MalList(expressions.slice(bindIndex)))
+        break;
+      }
+      newEnv.set(binding.value, exp)
+    }
 
     return newEnv;
   }
@@ -21,8 +31,8 @@ class Env {
   }
 
   find(key) {
-    if(this.data[key]) return this;
-    if(this.outer) return this.outer.find(key);
+    if (this.data[key]) return this;
+    if (this.outer) return this.outer.find(key);
   }
 
   get(key) {
