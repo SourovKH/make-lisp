@@ -9,15 +9,15 @@ class Env {
     this.data = {};
   }
 
-  static functionalEnv(outer, bindings, expressions) {
+  static functionalEnv(outer, bindings, params) {
     const newEnv = new this(outer);
     for(let index in bindings) {
       const bindIndex = +index;
       const binding = bindings[bindIndex];
-      const exp = expressions[bindIndex];
+      const exp = params[bindIndex];
 
       if(binding.value === '&') {
-        newEnv.set(bindings[bindIndex + 1].value, new MalList(expressions.slice(bindIndex)))
+        newEnv.set(bindings[bindIndex + 1].value, new MalList(params.slice(bindIndex)))
         break;
       }
       newEnv.set(binding.value, exp)

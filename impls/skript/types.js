@@ -92,7 +92,7 @@ class MalString {
   }
 
   prStr() {
-    return this.value;
+    return `"${this.value}"`;
   }
 
   equals(other) {
@@ -116,8 +116,10 @@ class MalNil {
 }
 
 class MalFunction {
-  constructor(func) {
-    this.value = func;
+  constructor(binding, body, env) {
+    this.binding = binding;
+    this.body = body;
+    this.env = env;
   }
 
   prStr() {

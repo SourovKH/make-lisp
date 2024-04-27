@@ -31,7 +31,7 @@ class Reader {
 
 const read_atom = (reader) => {
   const currentToken = reader.peek();
-  if (currentToken.match(/[0-9]+/g))
+  if (currentToken.match(/^[0-9]+/g))
     return new MalValue(parseInt(currentToken));
 
   if (currentToken === "nil") return new MalNil();
@@ -42,7 +42,7 @@ const read_atom = (reader) => {
   if (currentToken.match(/^:\w+/g))
     return new MalKeyword(currentToken.slice(1));
 
-  if (/^".*"$/.test(currentToken)) return new MalString(currentToken);
+  if (/^".*"$/.test(currentToken)) return new MalString(currentToken.slice(1, -1));
 
   if (currentToken.match(/[\Wa-zA-Z]+/g)) return new MalSymbol(currentToken);
 
